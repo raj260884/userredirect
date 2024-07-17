@@ -1,0 +1,46 @@
+<?php
+
+/**
+ * @file
+ * This module holds functions useful for Apigee NetIq.
+ */
+
+ use Drupal\Core\Entity\EntityInterface;
+ use Symfony\Component\HttpFoundation\RedirectResponse;
+
+
+ /**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function apigee_edge_netiq_integration_user_presave(EntityInterface $entity) {
+
+  $email = $entity->getEmail();
+  $domain = substr($email, strrpos($email, '@') + 1);
+
+  $basf_domains = [
+    'basf.com',
+    'basf-catalystsmetals.com',
+    'partners.basf.com',
+    'btc-europe.com',
+    'trinamix.de',
+    'partners.xarvio.com',
+    'xarvio.com'
+  ];
+
+  if (in_array($domain, $basf_domains)) {
+    $entity->addRole('internal_developer');
+  } else {
+    $entity->addRole('external_developer');
+  }
+}
+
+function apigee_edge_netiq_integration_user_login($account) {
+  // We want to redirect user on login.
+  $response = new RedirectResponse("/home");
+  $response->send();
+  return;
+}
+
+
+
+
